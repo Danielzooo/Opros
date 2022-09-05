@@ -1,18 +1,21 @@
 from telebot import types
-from mange import select
+from mange import SQL
+my = '123'
 
 
 class Info:
     questions = []
-    for i in select(1):
+    for i in SQL.select(1):
         questions.append(i[0])
 
     variants = ['null', ]
-    for i in select(2):
+    for i in SQL.select(2):
         variants.append(i[0])
+
     answers = []
-    for i in select(3):
+    for i in SQL.select(3):
         answers.append(i[0])
+
     check = []
     counter = 1
     points = 0
@@ -52,14 +55,18 @@ class Info:
             return bot.edit_message_text(chat_id=chat_id, message_id=message, text='Ваш ответ принят')
 
     @classmethod
-    def vi(cls, bot, chat_id):
+    def vi(cls, bot, chat_id, y='5467'):
+        global my
+        if isinstance(y, int):
+            my = y
         if cls.counter < len(cls.questions)+1:
             return bot.send_message(chat_id, f'Вопрос №{cls.counter}. {cls.questions[cls.counter-1]}',
                                     reply_markup=cls.vopros())
         else:
+            from mail import Ml
             cls.schet()
-            return bot.send_message(chat_id, 'Вы прошли тест, пожалуйста введите свой mail чтоб мы могли '
-                                             'отправить вам ваш результат')
+            Ml.send_mail(SQL.ad_user(my))
+            return bot.send_message(chat_id, 'Вы прошли тест, результат отправлен вам на почту')
 
     @classmethod
     def schet(cls):
